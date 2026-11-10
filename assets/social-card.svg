@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Viki Patel — AI and Software Engineer</title>
+  <desc id="desc">A green and cream social preview card with a connected systems illustration.</desc>
+  <rect width="1200" height="630" fill="#f8f9f6"/>
+  <circle cx="958" cy="315" r="250" fill="#dce9e1"/>
+  <circle cx="958" cy="315" r="185" fill="none" stroke="#7ba58e" stroke-opacity=".55"/>
+  <circle cx="958" cy="315" r="132" fill="none" stroke="#7ba58e" stroke-opacity=".42" stroke-dasharray="6 7"/>
+  <circle cx="958" cy="315" r="78" fill="#205f51"/>
+  <circle cx="925" cy="315" r="10" fill="#f8f9f6" stroke="#205f51" stroke-width="3"/>
+  <circle cx="982" cy="277" r="10" fill="#f8f9f6" stroke="#205f51" stroke-width="3"/>
+  <circle cx="986" cy="354" r="10" fill="#f8f9f6" stroke="#205f51" stroke-width="3"/>
+  <path d="M935 310 974 283M935 320l42 29M982 287l4 57" fill="none" stroke="#e9f3ed" stroke-width="2"/>
+  <rect x="951" y="308" width="14" height="14" rx="2" fill="#c9dda6" transform="rotate(45 958 315)"/>
+  <circle cx="843" cy="158" r="7" fill="#277566"/>
+  <circle cx="1094" cy="240" r="7" fill="#c9dda6"/>
+  <circle cx="856" cy="468" r="7" fill="#277566"/>
+  <g fill="#192d2a" font-family="Arial, Helvetica, sans-serif">
+    <text x="76" y="92" font-size="19" font-weight="700" letter-spacing="2">VIKI PATEL</text>
+    <text x="76" y="118" fill="#277566" font-size="10" font-weight="700" letter-spacing="2.4">AI &amp; SOFTWARE ENGINEER · CANADA</text>
+    <text x="76" y="260" font-size="68" font-weight="500" letter-spacing="-3">Intelligent systems.</text>
+    <text x="76" y="342" font-size="68" font-weight="500" letter-spacing="-3">Thoughtfully built.</text>
+    <text x="76" y="420" fill="#66736f" font-size="23">Automation · AI · Data · Software</text>
+    <text x="76" y="554" fill="#277566" font-size="16" font-weight="700" letter-spacing="2">VIKIPATEL.COM</text>
+  </g>
+</svg>

@@ -78,6 +78,52 @@ if (heroArt && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
  heroArt.addEventListener('blur', resetHero);
 }
 
+const systemConsole = document.querySelector('.system-console');
+if (systemConsole) {
+ const stages = [
+  {title:'Understand', copy:'Find the real problem before choosing the solution.', outcome:'CLARITY → DIRECTION'},
+  {title:'Engineer', copy:'Connect the right components into a dependable working system.', outcome:'DESIGN → DELIVERY'},
+  {title:'Improve', copy:'Learn from real use and make the system clearer and more reliable.', outcome:'FEEDBACK → IMPACT'}
+ ];
+ const buttons = [...systemConsole.querySelectorAll('[data-system-step]')];
+ const title = systemConsole.querySelector('[data-engine-title]');
+ const copy = systemConsole.querySelector('[data-engine-copy]');
+ const count = systemConsole.querySelector('[data-console-count]');
+ const outcome = systemConsole.querySelector('[data-console-outcome]');
+ let activeIndex = 0;
+ let userControlled = false;
+ const selectStage = (index, focus = false) => {
+  activeIndex = (index + stages.length) % stages.length;
+  systemConsole.dataset.stage = String(activeIndex);
+  buttons.forEach((button, buttonIndex) => {
+   const selected = buttonIndex === activeIndex;
+   button.classList.toggle('is-active', selected);
+   button.setAttribute('aria-pressed', String(selected));
+  });
+  title.textContent = stages[activeIndex].title;
+  copy.textContent = stages[activeIndex].copy;
+  count.textContent = `0${activeIndex + 1} / 03`;
+  outcome.textContent = stages[activeIndex].outcome;
+  if (focus) buttons[activeIndex].focus();
+ };
+ buttons.forEach((button, index) => {
+  button.addEventListener('pointerenter', () => selectStage(index));
+  button.addEventListener('focus', () => selectStage(index));
+  button.addEventListener('click', () => { userControlled = true; selectStage(index); });
+  button.addEventListener('keydown', event => {
+   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.preventDefault();
+    userControlled = true;
+    selectStage(activeIndex + (event.key === 'ArrowRight' ? 1 : -1), true);
+   }
+  });
+ });
+ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  window.setInterval(() => { if (!userControlled && !document.hidden) selectStage(activeIndex + 1); }, 4800);
+ }
+ selectStage(0);
+}
+
 if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
  document.querySelectorAll('[data-brand]').forEach(brand => {
   const resetBrand = () => { brand.style.setProperty('--bx', '0deg'); brand.style.setProperty('--by', '0deg'); };
@@ -99,10 +145,6 @@ const carouselNext = document.querySelector('.carousel-next');
 const carouselStatus = document.querySelector('.carousel-status');
 if (projectTrack && carouselPrevious && carouselNext && carouselStatus) {
  const projectCards = [...projectTrack.querySelectorAll('.project')];
- const clinicLabel = projectTrack.querySelector('.clinic .illustration-label');
- const emailLabel = projectTrack.querySelector('.ai-email .illustration-label');
- if (clinicLabel) clinicLabel.textContent = 'WORKFLOW VIEW';
- if (emailLabel) emailLabel.textContent = 'CLASSIFICATION VIEW';
  projectTrack.setAttribute('role', 'region');
  projectTrack.setAttribute('aria-label', 'Selected projects');
  projectTrack.tabIndex = 0;

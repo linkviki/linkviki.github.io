@@ -40,11 +40,61 @@ document.querySelectorAll('.close-dialog').forEach(button => button.addEventList
 dialog.addEventListener('click', event => { if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();} });
 dialog.addEventListener('close', () => {document.body.classList.remove('modal-open');opener?.focus();});
 
+const heroArt = document.querySelector('[data-hero-art]');
+if (heroArt && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+ const resetHero = () => { heroArt.style.setProperty('--mx', '0px'); heroArt.style.setProperty('--my', '0px'); };
+ heroArt.addEventListener('pointermove', event => {
+  const rect = heroArt.getBoundingClientRect();
+  const relativeX = (event.clientX - rect.left) / rect.width;
+  const relativeY = (event.clientY - rect.top) / rect.height;
+  const x = (relativeX - .5) * 34;
+  const y = (relativeY - .5) * 34;
+  heroArt.style.setProperty('--mx', `${x}px`);
+  heroArt.style.setProperty('--my', `${y}px`);
+  heroArt.style.setProperty('--px', `${relativeX * 100}%`);
+  heroArt.style.setProperty('--py', `${relativeY * 100}%`);
+ });
+ heroArt.addEventListener('pointerleave', resetHero);
+ heroArt.addEventListener('blur', resetHero);
+}
+
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+ document.querySelectorAll('[data-brand]').forEach(brand => {
+  const resetBrand = () => { brand.style.setProperty('--bx', '0deg'); brand.style.setProperty('--by', '0deg'); };
+  brand.addEventListener('pointermove', event => {
+   const rect = brand.getBoundingClientRect();
+   const x = ((event.clientX - rect.left) / rect.width - .5) * 12;
+   const y = ((event.clientY - rect.top) / rect.height - .5) * -12;
+   brand.style.setProperty('--bx', `${x}deg`);
+   brand.style.setProperty('--by', `${y}deg`);
+  });
+  brand.addEventListener('pointerleave', resetBrand);
+  brand.addEventListener('blur', resetBrand);
+ });
+}
+
 const contactForm = document.querySelector('#contact-form');
 if (contactForm) {
  const status = contactForm.querySelector('.form-status');
  const submit = contactForm.querySelector('button[type="submit"]');
  const submitLabel = submit.innerHTML;
+ const showSuccess = name => {
+  const note = document.createElement('span');
+  note.className = 'success-note';
+  const icon = document.createElement('span');
+  icon.className = 'success-icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = '✓';
+  const copy = document.createElement('span');
+  const heading = document.createElement('strong');
+  heading.textContent = `Message landed, ${name}.`;
+  const detail = document.createElement('span');
+  detail.textContent = 'Thanks for reaching out. I’ll read it personally and reply by email as soon as I can.';
+  copy.append(heading, detail);
+  note.append(icon, copy);
+  status.replaceChildren(note);
+  status.classList.add('success');
+ };
  contactForm.elements.startedAt.value = String(Date.now());
  contactForm.addEventListener('submit', async event => {
   event.preventDefault();
@@ -64,10 +114,10 @@ if (contactForm) {
    const response = await fetch(endpoint, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
    const result = await response.json().catch(() => ({}));
    if (!response.ok) throw new Error(result.error || 'Unable to send your message.');
+   const senderName = String(payload.name || '').trim().split(/\s+/)[0] || 'there';
    contactForm.reset();
    contactForm.elements.startedAt.value = String(Date.now());
-   status.textContent = 'Thanks — your message has been sent.';
-   status.classList.add('success');
+   showSuccess(senderName);
   } catch (error) {
    status.textContent = `${error.message} Please try again or connect with me on LinkedIn.`;
    status.classList.add('error');
@@ -76,4 +126,7 @@ if (contactForm) {
    submit.innerHTML = submitLabel;
   }
  });
+ if (location.hostname === 'localhost' && new URLSearchParams(location.search).get('message') === 'sent') {
+  showSuccess('Alex');
+ }
 }

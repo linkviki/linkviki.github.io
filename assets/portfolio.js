@@ -23,6 +23,26 @@ const projects = {
   workflow: ["Collect the daily revenue and booking reports.", "Check dates, expected fields, totals, and file completeness.", "Combine validated records and calculate revenue, occupancy, ADR, and RevPAR.", "Prepare the dashboard, management summary, and booking forecast."],
   stack: "Python · Data extraction · Validation pipelines · Tabular data processing · Dashboarding · Reporting automation",
   result: "The reporting process produces a consistent view of daily performance and forward bookings, while making data issues visible before the summary is shared."
+ },
+ "clinic-operations": {
+  title: "Clinic Lead & Marketing Operations",
+  tags: "CRM · LEAD MANAGEMENT · MARKETING OPERATIONS",
+  summary: "A focused workspace for coordinating enquiries, follow-ups, campaign sources, and team activity.",
+  problem: "Lead information and marketing activity can become scattered across forms, inboxes, spreadsheets, and individual follow-up notes. That makes it difficult to understand where an enquiry came from, what should happen next, and which conversations still need attention.",
+  contribution: "I designed the operational flow around a shared lead record, clear stages, ownership, follow-up dates, and campaign-source visibility. The interface keeps day-to-day actions visible without mixing them with clinical records.",
+  workflow: ["Collect enquiries from approved lead sources.", "Create a shared lead record with source, owner, stage, and next action.", "Move each conversation through follow-up and consultation stages.", "Review campaign activity and outstanding team actions from one dashboard."],
+  stack: "Web application · CRM workflows · Forms and API connections · Relational data · Reporting views · Role-based operations",
+  result: "The system provides one operational view for lead handling and marketing coordination, with clear ownership and next steps for each enquiry."
+ },
+ "ai-email-dashboard": {
+  title: "AI-Assisted Email Dashboard",
+  tags: "EMAIL OPERATIONS · AI CLASSIFICATION · HUMAN REVIEW",
+  summary: "A customized inbox workspace that helps teams review, classify, and act on incoming messages.",
+  problem: "Important messages can be difficult to identify when operational, financial, customer, and informational emails all arrive in the same inbox. Manual sorting takes time and can leave follow-ups buried.",
+  contribution: "I designed the message intake and review experience, including configurable categories, priority suggestions, routing states, search, and a human confirmation step before downstream action.",
+  workflow: ["Collect messages and the metadata required for review.", "Suggest a category, priority, and intended workflow using AI-assisted classification.", "Present the suggestion with the original message for human confirmation.", "Route confirmed messages into focused queues and track follow-up status."],
+  stack: "Email APIs · AI-assisted classification · Natural language processing · Web dashboard · Search and filtering · Workflow automation",
+  result: "The dashboard creates a more focused review process while keeping classification and routing decisions visible to the person handling the inbox."
  }
 };
 const dialog = document.querySelector('#project-dialog');
@@ -71,6 +91,56 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   brand.addEventListener('pointerleave', resetBrand);
   brand.addEventListener('blur', resetBrand);
  });
+}
+
+const projectTrack = document.querySelector('.selected-grid');
+const carouselPrevious = document.querySelector('.carousel-prev');
+const carouselNext = document.querySelector('.carousel-next');
+const carouselStatus = document.querySelector('.carousel-status');
+if (projectTrack && carouselPrevious && carouselNext && carouselStatus) {
+ const projectCards = [...projectTrack.querySelectorAll('.project')];
+ const clinicLabel = projectTrack.querySelector('.clinic .illustration-label');
+ const emailLabel = projectTrack.querySelector('.ai-email .illustration-label');
+ if (clinicLabel) clinicLabel.textContent = 'WORKFLOW VIEW';
+ if (emailLabel) emailLabel.textContent = 'CLASSIFICATION VIEW';
+ projectTrack.setAttribute('role', 'region');
+ projectTrack.setAttribute('aria-label', 'Selected projects');
+ projectTrack.tabIndex = 0;
+ const visibleCount = () => window.matchMedia('(max-width: 700px)').matches ? 1 : 2;
+ const currentIndex = () => {
+  const left = projectTrack.scrollLeft;
+  const firstLeft = projectCards[0].offsetLeft;
+  return projectCards.reduce((closest, card, index) => Math.abs((card.offsetLeft - firstLeft) - left) < Math.abs((projectCards[closest].offsetLeft - firstLeft) - left) ? index : closest, 0);
+ };
+ const updateCarousel = () => {
+  const count = visibleCount();
+  const index = Math.min(currentIndex(), projectCards.length - count);
+  carouselStatus.textContent = count === 1 ? `${index + 1} of ${projectCards.length}` : `${index + 1}–${Math.min(index + count, projectCards.length)} of ${projectCards.length}`;
+  carouselPrevious.disabled = index === 0;
+  carouselNext.disabled = index >= projectCards.length - count;
+ };
+ const moveCarousel = direction => {
+  const count = visibleCount();
+  const target = Math.max(0, Math.min(currentIndex() + direction * count, projectCards.length - count));
+  projectTrack.scrollTo({left: projectCards[target].offsetLeft - projectCards[0].offsetLeft, behavior: 'smooth'});
+ };
+ carouselPrevious.addEventListener('click', () => moveCarousel(-1));
+ carouselNext.addEventListener('click', () => moveCarousel(1));
+ projectTrack.addEventListener('scroll', updateCarousel, {passive:true});
+ projectTrack.addEventListener('keydown', event => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+   event.preventDefault();
+   moveCarousel(event.key === 'ArrowRight' ? 1 : -1);
+  }
+ });
+ window.addEventListener('resize', updateCarousel);
+ updateCarousel();
+ if (location.hostname === 'localhost' && new URLSearchParams(location.search).get('projects') === 'more') {
+  requestAnimationFrame(() => {
+   projectTrack.scrollTo({left: projectCards[2].offsetLeft - projectCards[0].offsetLeft, behavior:'auto'});
+   updateCarousel();
+  });
+ }
 }
 
 const contactForm = document.querySelector('#contact-form');
